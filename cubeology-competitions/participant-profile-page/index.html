@@ -1,0 +1,2534 @@
+<style>
+  /* ===== Mobile hardening (NEW) ===== */
+  *{ box-sizing:border-box; }
+  html,body{ max-width:100%; overflow-x:hidden; }
+  #app{ padding:16px !important; }
+  a, button{ -webkit-tap-highlight-color: transparent; }
+  button{ touch-action: manipulation; }
+
+  /* Mobile-friendly horizontal scroll for ranking event tabs (kept, but now optional) */
+  #rankEventTabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    display: none; /* dropdown-first UI; tabs still exist if you want to re-enable */
+  }
+  #rankEventTabs::-webkit-scrollbar { height: 6px; }
+  #rankEventTabs::-webkit-scrollbar-thumb { background: #eee; border-radius: 999px; }
+
+  /* ====== Directory (Home) UI ====== */
+  :root{
+    --dir-accent:#d62828;
+    --dir-accent-soft:#fff5f5;
+    --dir-border:#e5e7eb;
+    --dir-ink:#0f172a;
+    --dir-muted:#475569;
+    --dir-card:#ffffff;
+    --dir-surface:#f8fafc;
+  }
+
+  .dirCard{
+    border:1px solid var(--dir-border);
+    border-radius:18px;
+    background:var(--dir-card);
+    box-shadow:0 14px 30px rgba(0,0,0,.06);
+    overflow:hidden;
+  }
+  .dirCardHead{
+    padding:14px 16px;
+    background:linear-gradient(135deg, #ffffff 0%, #fff7f7 100%);
+    border-bottom:1px solid var(--dir-border);
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+  }
+  .dirTitle{
+    margin:0;
+    font-size:22px;
+    font-weight:950;
+    color:var(--dir-ink);
+    line-height:1.15;
+  }
+  .dirSub{
+    margin-top:4px;
+    font-size:12px;
+    font-weight:900;
+    color:var(--dir-muted);
+    opacity:.9;
+  }
+
+  .segWrap{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .segGroup{
+    display:inline-flex;
+    border:2px solid var(--dir-border);
+    border-radius:999px;
+    background:#fff;
+    padding:4px;
+    gap:4px;
+  }
+  .segBtn{
+    appearance:none;
+    border:0;
+    cursor:pointer;
+    font-weight:950;
+    padding:10px 14px;
+    border-radius:999px;
+    background:transparent;
+    color:var(--dir-ink);
+    user-select:none;
+    white-space:nowrap;
+  }
+  .segBtn.active{
+    background:var(--dir-accent-soft);
+    color:var(--dir-accent);
+    box-shadow:0 6px 16px rgba(214,40,40,.10);
+  }
+
+  .dirBody{ padding:14px; background:var(--dir-surface); }
+
+  .uiRow{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:12px;
+  }
+
+  .uiInput{
+    flex:1;
+    min-width:240px;
+    padding:12px 14px;
+    border:2px solid var(--dir-border);
+    border-radius:14px;
+    font-size:16px;
+    outline:none;
+    font-weight:850;
+    background:#fff;
+    color:var(--dir-ink);
+  }
+  .uiInput:focus{
+    border-color:var(--dir-accent);
+    box-shadow:0 0 0 4px rgba(214,40,40,.12);
+  }
+
+  .uiBtn{
+    padding:12px 14px;
+    border-radius:14px;
+    border:2px solid var(--dir-border);
+    background:#fff;
+    cursor:pointer;
+    font-weight:950;
+    color:var(--dir-ink);
+  }
+  .uiBtn:hover{ border-color:#cbd5e1; }
+  .uiBtn.primary{
+    border-color:var(--dir-accent);
+    background:var(--dir-accent-soft);
+    color:var(--dir-accent);
+  }
+
+  .uiChipLabel{
+    font-size:12px;
+    font-weight:950;
+    color:var(--dir-muted);
+    opacity:.9;
+  }
+
+  .uiSelect{
+    padding:12px 14px;
+    border-radius:14px;
+    border:2px solid var(--dir-border);
+    background:#fff;
+    font-weight:950;
+    min-width:220px;
+    color:var(--dir-ink);
+    outline:none;
+  }
+  .uiSelect:focus{
+    border-color:var(--dir-accent);
+    box-shadow:0 0 0 4px rgba(214,40,40,.12);
+  }
+
+  .uiPanel{
+    border:1px solid var(--dir-border);
+    border-radius:16px;
+    background:#fff;
+    overflow:hidden;
+  }
+
+  /* ===== Existing styles you had (kept) ===== */
+
+  /* Rankings list grid */
+  .rankRow {
+    display: grid;
+    grid-template-columns: 70px 1.6fr 0.7fr;
+    gap: 0;
+    padding: 12px 12px;
+    align-items: center;
+  }
+  .rankHeader {
+    background: #f3f4f6;
+    font-weight: 950;
+  }
+  .rankCellRight { text-align: right; font-weight: 950; }
+  .rankName { font-weight: 950; color: #111; text-decoration: none; }
+  .rankCompLine { margin-top: 4px; font-weight: 900; font-size: 12px; opacity: 0.75; }
+  .rankCompLine a { color: #d62828; text-decoration: none; font-weight: 950; }
+  .rankRow + .rankRow { border-top: 1px solid #eee; }
+
+  /* Profile tabs + Stats UI */
+  .profileTabs { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .pillBtn {
+    padding:10px 12px; border-radius:999px; border:2px solid #ddd; background:#fff;
+    cursor:pointer; font-weight:950; user-select:none;
+  }
+  .pillBtn.active { border-color:#d62828; background:#fff5f5; }
+
+  .statsWrap { border:1px solid #ddd; border-radius:14px; background:#fff; padding:14px; }
+  .statsGrid {
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap:10px;
+    margin-top:12px;
+  }
+  .statCard {
+    border:1px solid #eee;
+    border-radius:14px;
+    padding:12px;
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  }
+  .statLabel { font-size:12px; font-weight:950; opacity:0.65; }
+  .statValue { font-size:18px; font-weight:950; margin-top:8px; line-height:1.2; }
+  .statSub { margin-top:8px; font-size:12px; font-weight:900; opacity:0.78; }
+  .statBadge {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:6px 10px; border-radius:999px; border:1px solid #ddd; background:#fff;
+    font-weight:950; font-size:12px;
+  }
+
+  .selectWrap { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+  .selectWrap label { font-weight:950; font-size:12px; opacity:0.75; }
+  .selectWrap select {
+    padding:10px 12px;
+    border-radius:12px;
+    border:2px solid #ddd;
+    font-weight:950;
+    background:#fff;
+    min-width: 220px;
+    outline:none;
+  }
+
+  /* NEW: Pagination bar (Directory) */
+  .pagerBar{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    flex-wrap:wrap;
+    padding:12px;
+    border-top:1px solid #eee;
+    background:#fff;
+    align-items:center;
+  }
+  .pagerBtn{
+    padding:10px 12px;
+    border-radius:12px;
+    border:2px solid #ddd;
+    background:#fff;
+    cursor:pointer;
+    font-weight:950;
+    color:#111827;
+  }
+  .pagerBtn[disabled]{
+    opacity:.45;
+    cursor:not-allowed;
+  }
+  .pagerInfo{
+    font-weight:950;
+    font-size:12px;
+    opacity:.75;
+    margin-right:6px;
+  }
+
+  /* PR Mobile slider styles */
+  #prSwipeHint { display:none; font-size:12px; font-weight:900; opacity:0.7; }
+  .prMiniBadge{
+    display:inline-flex; align-items:center;
+    padding:4px 8px; border-radius:999px;
+    border:1px solid #ddd; background:#fff;
+    font-weight:950; font-size:12px; margin-left:8px;
+  }
+  .prDesktopTable { display:block; }
+  .prMobileSlider { display:none; }
+  .prCard {
+    border:1px solid #eee;
+    border-radius:16px;
+    background:#fff;
+    padding:12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.04);
+  }
+  .prCardTitle { font-weight:950; font-size:16px; }
+  .prCardRow { margin-top:10px; display:flex; justify-content:space-between; gap:10px; align-items:center; }
+  .prCardLabel { font-size:12px; font-weight:950; opacity:0.65; }
+  .prCardValue { font-weight:950; }
+
+  /* ===== H2H UI ===== */
+  .h2hModeTabs { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 10px; }
+  .h2hModeBtn{
+    padding:10px 12px; border-radius:999px; border:2px solid #ddd; background:#fff;
+    cursor:pointer; font-weight:950;
+  }
+  .h2hModeBtn.active{ border-color:#d62828; background:#fff5f5; }
+
+  .h2hNamesRow{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-top:12px;
+  }
+
+  /* H2H name links (white) */
+  .h2hNameLink{
+    font-weight:950;
+    text-decoration:none;
+    color: #ffffff !important;
+    border-bottom:1px dashed rgba(255,255,255,0.28);
+  }
+
+  .h2hResultWin{ color:#16a34a; font-weight:950; }
+  .h2hResultLose{ color:#ef4444; font-weight:950; }
+
+  .h2hScorePill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid #ddd;
+    background:#fff;
+    font-weight:950;
+  }
+
+  .h2hToggleBtn{
+    padding:8px 10px; border-radius:10px; border:1px solid #ddd;
+    background:#fff; cursor:pointer; font-weight:950;
+  }
+
+  .h2hSetsWrap{
+    margin-top:12px;
+    border:1px dashed rgba(255,255,255,0.18);
+    border-radius:14px;
+    padding:10px;
+    background:rgba(255,255,255,0.06);
+    overflow-x:auto;                 /* NEW: always safe */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .h2hNameRow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width: 0;
+  }
+  .h2hNameText{
+    font-weight:950;
+    font-size:12px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .h2hMiniScore{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:26px;
+    height:26px;
+    padding:0 8px;
+    border-radius:999px;
+    border:1.5px solid rgba(255,255,255,0.35);
+    background:rgba(255,255,255,0.12);
+    font-weight:950;
+    font-size:13px;
+    line-height:1;
+    flex:0 0 auto;
+  }
+
+  .h2hCompCard{
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:18px;
+    box-shadow:0 10px 24px rgba(0,0,0,.08);
+  }
+
+  .h2hMatchCard{
+    margin-top:12px;
+    padding:12px;
+    border-radius:14px;
+    border:1.5px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.06);
+  }
+
+  .h2hMatchMeta{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:10px;
+  }
+
+  /* score beside player name (per set) */
+  .h2hSetTable{
+    display:grid;
+    grid-template-columns: 116px repeat(5, minmax(46px, 1fr));
+    gap:6px;
+    align-items:center;
+    min-width: 520px;               /* NEW: makes horizontal scroll smooth */
+  }
+  .h2hSetTitle{
+    margin-top:12px;
+    font-weight:950;
+    font-size:13px;
+    opacity:0.92;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .h2hTimeCell{
+    text-align:center;
+    font-weight:950;
+    font-size:12px;
+    padding:8px 6px;
+    border-radius:10px;
+    border:1px solid #e5e7eb;
+    background:#fff;
+    min-width: 46px;
+    color:#111827;
+  }
+  .h2hTimeWin{ border-color:#16a34a !important; background:#ecfdf5 !important; color:#14532d !important; }
+  .h2hTimeLose{ border-color:#ef4444 !important; background:#fef2f2 !important; color:#7f1d1d !important; }
+  .h2hTimeTie{ border-color:#93c5fd !important; background:#eff6ff !important; color:#1e3a8a !important; }
+
+  /* ===== Mobile tweaks ===== */
+  @media (max-width: 900px) {
+    .statsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* NEW: better small-phone layout */
+  @media (max-width: 720px){
+    #app{ padding:12px !important; }
+    .dirBody{ padding:12px; }
+
+    .dirCardHead{
+      align-items:flex-start;
+      gap:10px;
+    }
+
+    /* Tabs become full-width segmented on mobile */
+    .segWrap{ width:100%; }
+    .segGroup{ width:100%; display:flex; }
+    .segBtn{ flex:1; text-align:center; padding:11px 10px; }
+
+    /* Inputs stack nicely */
+    .uiRow{ align-items:stretch; }
+    .uiInput{ min-width:0; width:100%; flex:1 1 100%; }
+    .uiBtn{ width:100%; }
+    .uiSelect{ width:100%; min-width:0; }
+
+    /* Rankings: tighter grid */
+    .rankRow{
+      grid-template-columns: 44px 1fr 92px;
+      padding:10px 10px;
+    }
+    .rankName{ font-size:14px; }
+    .rankCellRight{ font-size:14px; }
+    .rankCompLine{ font-size:11px; }
+
+    /* Participant rows: allow wrap */
+    #participantList a{
+      flex-direction:column;
+      align-items:flex-start !important;
+    }
+
+    /* Pagination: center on mobile */
+    .pagerBar{ justify-content:center; }
+  }
+
+  @media (max-width: 640px) {
+    .rankRow { grid-template-columns: 44px 1fr 92px; padding: 10px 10px; }
+    .rankName { font-size: 14px; }
+    .rankCompLine { font-size: 11px; }
+    .rankCellRight { font-size: 14px; }
+
+    .statsGrid { grid-template-columns: 1fr; }
+    .statValue { font-size:16px; }
+
+    .selectWrap select { width: 100%; min-width: 0; }
+
+    /* PR becomes swipeable cards */
+    #prSwipeHint { display:block; }
+    .prDesktopTable { display:none; }
+    .prMobileSlider {
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+    }
+    .prMobileSlider::-webkit-scrollbar { height: 6px; }
+    .prMobileSlider::-webkit-scrollbar-thumb { background: #eee; border-radius: 999px; }
+    .prCard { flex: 0 0 84%; scroll-snap-align: start; }
+
+    .h2hMiniScore{ min-width:22px; height:22px; font-size:12px; }
+    .h2hSetTable{ grid-template-columns: 108px repeat(5, minmax(44px, 1fr)); min-width: 500px; }
+    .h2hTimeCell{ min-width:44px; }
+  }
+
+  /* NEW: extra-small phones */
+  @media (max-width: 420px){
+    .dirTitle{ font-size:20px; }
+    .segBtn{ font-size:13px; padding:10px 8px; }
+    .uiInput, .uiSelect{ font-size:15px; }
+    .rankRow{ grid-template-columns: 40px 1fr 86px; }
+  }
+</style>
+
+
+<div id="app" style="max-width: 1100px; margin: 0 auto; padding: 20px;">
+  <!-- HOME VIEW (no pid) -->
+  <div id="homeView" style="display:none;">
+    <div class="dirCard">
+      <div class="dirCardHead">
+        <div>
+          <h1 class="dirTitle">Directory</h1>
+          <div class="dirSub">Rankings • Participants • Competitions</div>
+        </div>
+
+        <div class="segWrap">
+          <div class="segGroup" role="tablist" aria-label="Directory Tabs">
+            <button id="tabRankings" class="segBtn active" type="button">Rankings</button>
+            <button id="tabParticipants" class="segBtn" type="button">Participants</button>
+            <button id="tabCompetitions" class="segBtn" type="button">Competitions</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dirBody">
+        <div id="rankingsTab" style="display:none;">
+          <div class="uiRow">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <span class="uiChipLabel">Event</span>
+              <select id="rankEventSelect" class="uiSelect" aria-label="Select event"></select>
+            </div>
+
+            <div style="margin-left:auto;">
+              <div class="segGroup" aria-label="Rank mode">
+                <button id="rankModeSingle" class="segBtn active" type="button">Single</button>
+                <button id="rankModeAo5" class="segBtn" type="button">Ao5</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="uiRow">
+            <input id="rankSearch" class="uiInput" type="text" placeholder="Search participant name…">
+            <button id="rankClear" class="uiBtn" type="button">Clear</button>
+          </div>
+
+          <div id="rankEventTabs" style="display:flex; gap:10px; flex-wrap:nowrap; margin-bottom:12px;"></div>
+
+          <div id="rankStatus" class="uiPanel" style="padding:12px; margin-bottom:14px;">Loading rankings…</div>
+          <div id="rankTableWrap" class="uiPanel"></div>
+        </div>
+
+        <div id="participantsTab" style="display:none;">
+          <div class="uiRow">
+            <input id="searchBox" class="uiInput" type="text" placeholder="Search participant name…">
+            <button id="clearBtn" class="uiBtn" type="button">Clear</button>
+          </div>
+
+          <div class="uiRow">
+            <div class="segGroup" aria-label="Sort mode">
+              <button id="sortIdBtn" class="segBtn active" type="button">Sort: ID</button>
+              <button id="sortAzBtn" class="segBtn" type="button">Sort: A–Z</button>
+            </div>
+          </div>
+
+          <div id="participantList" class="uiPanel"></div>
+        </div>
+
+        <div id="competitionsTab" style="display:none;">
+          <div id="compStatus" class="uiPanel" style="padding:12px; margin-bottom:14px;">Loading competitions…</div>
+          <div id="competitionList" class="uiPanel"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE VIEW -->
+  <div id="profileView" style="display:none;">
+    <div style="margin-bottom:12px;">
+      <a href="/rankings" style="text-decoration:none;">← Back</a>
+    </div>
+
+    <div id="profileHeader" style="padding:16px; border:1px solid #ddd; border-radius:14px; margin-bottom:14px; background:#fff;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+          <h1 id="playerTitle" style="margin:0; font-size:28px; line-height:1.2;"></h1>
+          <div style="margin-top:6px; opacity:0.85; font-size:14px;">
+            <span id="playerSubtitle"></span>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span id="playerIdBadge" style="padding:6px 10px; border-radius:999px; border:1px solid #ddd; font-weight:950;">ID: —</span>
+          <button id="copyProfileBtn" type="button" style="padding:10px 12px; border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:950;">
+            Copy Profile URL
+          </button>
+        </div>
+      </div>
+
+      <div id="prSection" style="margin-top:14px; padding:12px; border:1px solid #eee; border-radius:14px; background:#fafafa;">
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap;">
+          <div style="font-weight:950; display:flex; align-items:center; gap:10px;">
+            Personal Records (PR)
+            <span id="prSwipeHint">Swipe →</span>
+          </div>
+          <button id="prToggleBtn" type="button" style="padding:8px 10px; border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer; font-weight:950;">
+            Hide PR
+          </button>
+        </div>
+        <div id="prGrid" style="display:block; margin-top:12px;"></div>
+      </div>
+
+      <div class="profileTabs">
+        <button id="profileTabResults" class="pillBtn active" type="button">Results</button>
+        <button id="profileTabStats" class="pillBtn" type="button">Stats</button>
+      </div>
+
+      <div id="resultsTopArea">
+        <div style="margin-top:14px; font-weight:950;">Results</div>
+        <div id="eventToggles" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;"></div>
+      </div>
+
+      <div id="statsArea" style="display:none; margin-top:14px;">
+        <div class="profileTabs" style="margin-top:0;">
+          <button id="statsTabOverview" class="pillBtn active" type="button">Overview</button>
+          <button id="statsTabMisc" class="pillBtn" type="button">Misc</button>
+        </div>
+
+        <div class="statsWrap" style="margin-top:12px;">
+          <div id="statsOverview" style="display:block;"></div>
+          <div id="statsMisc" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="status" style="display:none; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 16px;">Loading…</div>
+    <div id="eventResults"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR9qCCGUoHYG6RZL6MlLkOAWw60yYIomChaU-Yxz5j9xHBeqfNcuY_uBxntgbAw-HUMY-Z7sGK7_gnR/pub?gid=0&single=true&output=csv";
+
+  const EVENT_PRIORITY = [
+    "3x3","2x2","4x4","5x5","6x6","7x7",
+    "Pyraminx","Skewb","Clock","OH","Megaminx","Square 1",
+    "3BLD","4BLD","5BLD","FMC","Mirror"
+  ];
+  const EVENT_RANK = new Map(EVENT_PRIORITY.map((e,i)=>[e.toLowerCase(), i]));
+  const BIG_NUMBER = 1e15;
+
+  const DEFAULT_PAGE_SIZE = 100;
+
+  const params = new URLSearchParams(window.location.search);
+  const pid = (params.get("pid") || "").trim();
+
+  const homeView = document.getElementById("homeView");
+  const profileView = document.getElementById("profileView");
+
+  const tabRankings = document.getElementById("tabRankings");
+  const tabParticipants = document.getElementById("tabParticipants");
+  const tabCompetitions = document.getElementById("tabCompetitions");
+  const rankingsTab = document.getElementById("rankingsTab");
+  const participantsTab = document.getElementById("participantsTab");
+  const competitionsTab = document.getElementById("competitionsTab");
+
+  const rankSearch = document.getElementById("rankSearch");
+  const rankClear = document.getElementById("rankClear");
+  const rankEventTabs = document.getElementById("rankEventTabs");
+  const rankEventSelect = document.getElementById("rankEventSelect");
+  const rankModeSingle = document.getElementById("rankModeSingle");
+  const rankModeAo5 = document.getElementById("rankModeAo5");
+  const rankStatus = document.getElementById("rankStatus");
+  const rankTableWrap = document.getElementById("rankTableWrap");
+
+  const searchBox = document.getElementById("searchBox");
+  const clearBtn = document.getElementById("clearBtn");
+  const participantList = document.getElementById("participantList");
+  const sortIdBtn = document.getElementById("sortIdBtn");
+  const sortAzBtn = document.getElementById("sortAzBtn");
+
+  const compStatus = document.getElementById("compStatus");
+  const competitionList = document.getElementById("competitionList");
+
+  const statusEl = document.getElementById("status");
+  const playerTitleEl = document.getElementById("playerTitle");
+  const playerSubtitleEl = document.getElementById("playerSubtitle");
+  const playerIdBadgeEl = document.getElementById("playerIdBadge");
+  const eventTogglesEl = document.getElementById("eventToggles");
+  const eventResultsEl = document.getElementById("eventResults");
+  const prToggleBtn = document.getElementById("prToggleBtn");
+  const prGrid = document.getElementById("prGrid");
+  const copyProfileBtn = document.getElementById("copyProfileBtn");
+
+  const profileTabResults = document.getElementById("profileTabResults");
+  const profileTabStats = document.getElementById("profileTabStats");
+  const resultsTopArea = document.getElementById("resultsTopArea");
+  const statsArea = document.getElementById("statsArea");
+  const statsTabOverview = document.getElementById("statsTabOverview");
+  const statsTabMisc = document.getElementById("statsTabMisc");
+  const statsOverview = document.getElementById("statsOverview");
+  const statsMisc = document.getElementById("statsMisc");
+
+  function norm(s){ return String(s ?? "").trim(); }
+  function safeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]));
+  }
+  function normKey(h){
+    return norm(h).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  }
+  function eventSortKey(e){
+    const k = norm(e).toLowerCase();
+    return EVENT_RANK.has(k) ? EVENT_RANK.get(k) : BIG_NUMBER;
+  }
+  function truthy(v){
+    const s = norm(v).toLowerCase();
+    return s === "1" || s === "y" || s === "yes" || s === "true" || s === "h2h" || s === "headtohead" || s === "head_to_head" || s === "head-to-head";
+  }
+
+  /* ===== Pagination helpers ===== */
+  function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+  function pageCount(total, size){ return Math.max(1, Math.ceil((total || 0) / (size || 1))); }
+  function slicePage(arr, page, size){
+    const total = arr.length;
+    const pages = pageCount(total, size);
+    const p = clamp(page, 1, pages);
+    const start = (p - 1) * size;
+    return { page: p, pages, items: arr.slice(start, start + size), total };
+  }
+  function renderPagerHtml(page, pages, total){
+    return `
+      <div class="pagerBar">
+        <span class="pagerInfo">Rows: ${total} • Page ${page}/${pages}</span>
+        <button class="pagerBtn" data-pg="first" ${page<=1 ? "disabled":""}>First</button>
+        <button class="pagerBtn" data-pg="prev" ${page<=1 ? "disabled":""}>Back</button>
+        <button class="pagerBtn" data-pg="next" ${page>=pages ? "disabled":""}>Next</button>
+        <button class="pagerBtn" data-pg="last" ${page>=pages ? "disabled":""}>Last</button>
+      </div>
+    `;
+  }
+  function bindPager(container, page, pages, onGo){
+    container.querySelectorAll("button[data-pg]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const t = btn.getAttribute("data-pg");
+        let next = page;
+        if(t==="first") next = 1;
+        if(t==="prev") next = page - 1;
+        if(t==="next") next = page + 1;
+        if(t==="last") next = pages;
+        onGo(clamp(next, 1, pages));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+  }
+
+  function parseCSV(text){
+    const rows=[]; let row=[]; let cur=""; let inQuotes=false;
+    for(let i=0;i<text.length;i++){
+      const ch=text[i], next=text[i+1];
+      if(ch === '"' && inQuotes && next === '"'){ cur+='"'; i++; }
+      else if(ch === '"'){ inQuotes=!inQuotes; }
+      else if(ch === "," && !inQuotes){ row.push(cur); cur=""; }
+      else if((ch === "\n" || ch === "\r") && !inQuotes){
+        if(ch === "\r" && next === "\n") i++;
+        row.push(cur); rows.push(row); row=[]; cur="";
+      } else cur+=ch;
+    }
+    if(cur.length || row.length){ row.push(cur); rows.push(row); }
+    return rows;
+  }
+
+  function isDNF(v){
+    const x = norm(v).toUpperCase();
+    return x === "DNF" || x === "999";
+  }
+
+  function parseTimeToSeconds(v){
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    const s = norm(v);
+    if (!s) return Infinity;
+    if (isDNF(s)) return Infinity;
+
+    if (s.includes(":")) {
+      const m = s.match(/^(\d+):([0-5]?\d)(\.\d+)?$/);
+      if (!m) return Infinity;
+      const mins = Number(m[1]);
+      const secs = Number(m[2] + (m[3] || ""));
+      if (!Number.isFinite(mins) || !Number.isFinite(secs)) return Infinity;
+      return mins * 60 + secs;
+    }
+    const n = Number(s);
+    return Number.isFinite(n) ? n : Infinity;
+  }
+
+  function toNumOrInf(v){ return parseTimeToSeconds(v); }
+
+  function fmtTime(v){
+    const s = norm(v);
+    if (!s && !(typeof v === "number" && Number.isFinite(v))) return "";
+    if (isDNF(v)) return "DNF";
+
+    const sec = parseTimeToSeconds(v);
+    if (sec === Infinity) return "DNF";
+
+    if (sec < 60) return sec.toFixed(2);
+
+    const minutes = Math.floor(sec / 60);
+    const rem = (sec - minutes * 60).toFixed(2);
+    const [si, sd] = rem.split(".");
+    return `${minutes}:${si.padStart(2, "0")}.${sd}`;
+  }
+
+  function computeAo5FromSolves(solArr){
+    if(!Array.isArray(solArr) || solArr.length !== 5) return null;
+    if(solArr.some(s => !norm(s))) return null;
+    const nums = solArr.map(s => toNumOrInf(s));
+    const dnfs = nums.filter(x => x === Infinity).length;
+    if(dnfs >= 2) return Infinity;
+    const sorted = [...nums].sort((a,b)=> a - b);
+    const mid3 = sorted.slice(1, 4);
+    if(mid3.some(x => x === Infinity)) return Infinity;
+    return (mid3[0] + mid3[1] + mid3[2]) / 3;
+  }
+
+  function parseOneDate(s){
+    const v=norm(s);
+    const m=v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+    if(!m) return null;
+    const dd=Number(m[1]), mm=Number(m[2]);
+    let yy=Number(m[3]); if(yy<100) yy=2000+yy;
+    const d=new Date(yy, mm-1, dd);
+    return Number.isNaN(d.getTime()) ? null : d.getTime();
+  }
+  function parseDateRange(s){
+    const v=norm(s);
+    if(!v) return {start:null, end:null};
+    const parts = v.split(/[-–—]/).map(x=>norm(x)).filter(Boolean);
+    if(parts.length >= 2){
+      const a = parseOneDate(parts[0]) ?? Date.parse(parts[0]);
+      const b = parseOneDate(parts[1]) ?? Date.parse(parts[1]);
+      return { start: Number.isFinite(a)?a:null, end: Number.isFinite(b)?b:null };
+    }
+    const one=parseOneDate(v);
+    if(one) return {start:one, end:one};
+    const t=Date.parse(v);
+    if(Number.isFinite(t)) return {start:t, end:t};
+    return {start:null, end:null};
+  }
+  function formatRange(startTs, endTs){
+    if(!startTs && !endTs) return "—";
+    const fmt=(ts)=>{
+      const d=new Date(ts);
+      const dd=String(d.getDate()).padStart(2,"0");
+      const mm=String(d.getMonth()+1).padStart(2,"0");
+      const yy=String(d.getFullYear()).slice(-2);
+      return `${dd}/${mm}/${yy}`;
+    };
+    if(startTs && endTs) return `${fmt(startTs)} - ${fmt(endTs)}`;
+    if(startTs) return fmt(startTs);
+    return fmt(endTs);
+  }
+
+  function getCompLink(row){
+    const cid = norm(row.comp_id).toUpperCase();
+    const cname = norm(row.comp_name).toLowerCase();
+    if (cid.includes("FF") || cname.includes("frosted fingers") || cname.includes("frozen fingers")) {
+      return "https://thecubeology.com/pages/rankings-frosted-fingers-2025";
+    }
+    if (cid.includes("HW") || cname.includes("heatwaves") || cname.includes("cubing heatwaves")) {
+      return "https://thecubeology.com/pages/rankings-cubing-heatwaves-2025";
+    }
+    return "";
+  }
+
+  /* =========================
+     THEME: sheet-driven + auto-contrast
+     Cubing Clash: fixed theme everywhere
+  ========================= */
+  function isCubingClashRow(row){
+    const n = norm(row.comp_name).toLowerCase();
+    const cid = norm(row.comp_id).toLowerCase();
+    return (
+      n.includes("cubing clash 1.0") ||
+      n.includes("cubing clash 2.0") ||
+      n.includes("cubing clash") ||
+      cid.includes("cubingclash") ||
+      cid.includes("cc1") ||
+      cid.includes("cc2")
+    );
+  }
+
+  function hexToRgba(hex, a){
+    const h = norm(hex);
+    const m = h.match(/^#?([a-fA-F0-9]{6})$/);
+    if(!m) return null;
+    const v = m[1];
+    const r = parseInt(v.slice(0,2),16);
+    const g = parseInt(v.slice(2,4),16);
+    const b = parseInt(v.slice(4,6),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  function parseCssColorToRgb(input){
+    const s = norm(input);
+    if(!s) return null;
+
+    const hex = s.match(/#([0-9a-fA-F]{6})/);
+    if(hex){
+      const v = hex[1];
+      return { r: parseInt(v.slice(0,2),16), g: parseInt(v.slice(2,4),16), b: parseInt(v.slice(4,6),16) };
+    }
+
+    const rgb = s.match(/rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)\s*(?:,\s*([0-9.]+)\s*)?\)/i);
+    if(rgb){
+      return { r: Number(rgb[1]), g: Number(rgb[2]), b: Number(rgb[3]) };
+    }
+
+    return null;
+  }
+
+  function relLuminance(rgb){
+    if(!rgb) return 1;
+    const srgb = [rgb.r, rgb.g, rgb.b].map(v => Math.max(0, Math.min(255, v)) / 255);
+    const lin = srgb.map(c => (c <= 0.04045) ? (c/12.92) : Math.pow((c+0.055)/1.055, 2.4));
+    return 0.2126*lin[0] + 0.7152*lin[1] + 0.0722*lin[2];
+  }
+
+  function contrastRatio(rgbA, rgbB){
+    const L1 = relLuminance(rgbA);
+    const L2 = relLuminance(rgbB);
+    const hi = Math.max(L1, L2);
+    const lo = Math.min(L1, L2);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
+  function pickReadableText(bgCss){
+    const bg = parseCssColorToRgb(bgCss);
+    const white = {r:255,g:255,b:255};
+    const black = {r:17,g:24,b:39};
+    if(!bg) return { text:"#111827", muted:"rgba(17,24,39,0.72)" };
+
+    const cW = contrastRatio(white, bg);
+    const cB = contrastRatio(black, bg);
+    if(cW >= cB) return { text:"#ffffff", muted:"rgba(255,255,255,0.78)" };
+    return { text:"#111827", muted:"rgba(17,24,39,0.72)" };
+  }
+
+  function ensureTextOn(bgCss, desiredTextCss){
+    const bg = parseCssColorToRgb(bgCss);
+    const fg = parseCssColorToRgb(desiredTextCss);
+    if(!bg || !fg) return desiredTextCss || "#111827";
+    const ratio = contrastRatio(fg, bg);
+    if(ratio >= 4.5) return desiredTextCss;
+    const cW = contrastRatio({r:255,g:255,b:255}, bg);
+    const cD = contrastRatio({r:17,g:24,b:39}, bg);
+    return (cW >= cD) ? "#ffffff" : "#111827";
+  }
+
+  function getCubingClashTheme(){
+    return {
+      __fixed: true,
+      cardBg: "linear-gradient(135deg,#0b0f19 0%, #111827 45%, #1f2937 100%)",
+      border: "#facc15",
+      headerBg: "linear-gradient(135deg,#0f172a 0%, #111827 100%)",
+      accent: "#facc15",
+      chipBg: "rgba(250,204,21,0.12)",
+      chipBorder: "rgba(250,204,21,0.55)",
+      chipText: "#facc15",
+      text: "#f8fafc",
+      muted: "rgba(248,250,252,0.78)",
+      label: "rgba(248,250,252,0.86)",
+      surface: "rgba(255,255,255,0.08)",
+      surface2: "rgba(255,255,255,0.10)",
+      buttonText: "#f8fafc"
+    };
+  }
+
+  function themeFromSheet(row){
+    const cardBg   = norm(row.theme_bg)       || "#ffffff";
+    const border   = norm(row.theme_border)   || "#e5e7eb";
+    const headerBg = norm(row.theme_header)   || "#ffffff";
+    const accent   = norm(row.theme_accent)   || "#d62828";
+    const chipBg   = norm(row.theme_chip_bg)  || (hexToRgba(accent, 0.08) || "rgba(17,24,39,0.04)");
+    const chipTextRaw = norm(row.theme_chip_text) || accent;
+
+    const tCard = pickReadableText(cardBg);
+    const tHeader = pickReadableText(headerBg);
+    const chipText = ensureTextOn(chipBg, chipTextRaw);
+
+    const bgRgb = parseCssColorToRgb(cardBg);
+    const cardIsDark = bgRgb ? relLuminance(bgRgb) < 0.40 : false;
+    const surface  = cardIsDark ? "rgba(255,255,255,0.08)" : "rgba(17,24,39,0.04)";
+    const surface2 = cardIsDark ? "rgba(255,255,255,0.10)" : "#ffffff";
+
+    return {
+      cardBg,
+      headerBg,
+      border,
+      accent,
+      chipBg,
+      chipBorder: border,
+      chipText,
+      text: tCard.text,
+      muted: tCard.muted,
+      headerText: tHeader.text,
+      headerMuted: tHeader.muted,
+      label: tCard.muted,
+      surface,
+      surface2
+    };
+  }
+
+  function getCompTheme(row){
+    if(isCubingClashRow(row || {})) return getCubingClashTheme();
+    return themeFromSheet(row || {});
+  }
+
+  function pill(theme, text){
+    return `
+      <span style="
+        padding:6px 10px;
+        border-radius:999px;
+        border:1px solid ${theme.chipBorder || theme.border};
+        background:${theme.chipBg || theme.surface};
+        font-weight:950;
+        font-size:12px;
+        color:${theme.chipText || theme.accent};
+      ">
+        ${safeHtml(text)}
+      </span>
+    `;
+  }
+
+  function rankPill(rank){
+    const r = Number(rank);
+    if(!Number.isFinite(r) || r<=0) return "";
+    if(r===1) return `<span style="display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid #d4af37; background:#fff7d6; font-weight:950;"><span style="color:#b8860b;">#1</span><span style="font-size:16px;">🥇</span></span>`;
+    if(r===2) return `<span style="display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid #c0c0c0; background:#f3f4f6; font-weight:950;"><span style="color:#6b7280;">#2</span><span style="font-size:16px;">🥈</span></span>`;
+    if(r===3) return `<span style="display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid #cd7f32; background:#fff0e3; font-weight:950;"><span style="color:#8b4f22;">#3</span><span style="font-size:16px;">🥉</span></span>`;
+    return `<span style="display:inline-flex; align-items:center; padding:6px 10px; border-radius:999px; border:1px solid #ddd; background:#fff; font-weight:950; color:#111827;">#${r}</span>`;
+  }
+
+  function solveSpansWithBestWorst(solArr) {
+    const filtered = solArr.filter(s => norm(s));
+    if(!filtered.length) return "";
+    if(filtered.length === 1){
+      const text = fmtTime(filtered[0]);
+      const style = `padding:6px 10px; border-radius:10px; border:1px solid #16a34a; background:#ecfdf5; color:#14532d; display:inline-block; font-weight:950;`;
+      return `<span style="${style}">${safeHtml(text)}</span>`;
+    }
+
+    const nums = filtered.map(s => toNumOrInf(s));
+    const hasDNF = nums.some(x => x === Infinity);
+
+    let bestIdx = -1, worstIdx = -1;
+    let bestVal = Infinity;
+    for (let i = 0; i < nums.length; i++) {
+      if (nums[i] !== Infinity && nums[i] < bestVal) { bestVal = nums[i]; bestIdx = i; }
+    }
+    if (hasDNF) worstIdx = nums.findIndex(x => x === Infinity);
+    else {
+      let worstVal = -Infinity;
+      for (let i = 0; i < nums.length; i++) {
+        if (nums[i] > worstVal) { worstVal = nums[i]; worstIdx = i; }
+      }
+    }
+    if(bestIdx === worstIdx) worstIdx = -1;
+
+    return filtered.map((raw, i) => {
+      const text = fmtTime(raw);
+      let style = `padding:6px 10px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; display:inline-block; font-weight:950; color:#111827;`;
+      if (i === worstIdx && worstIdx !== -1) style = `padding:6px 10px; border-radius:10px; border:1px solid #ef4444; background:#fef2f2; display:inline-block; font-weight:950; color:#7f1d1d;`;
+      if (i === bestIdx && bestIdx !== -1)  style = `padding:6px 10px; border-radius:10px; border:1px solid #16a34a; background:#ecfdf5; display:inline-block; font-weight:950; color:#14532d;`;
+      return `<span style="${style}">${safeHtml(text)}</span>`;
+    }).join(" ");
+  }
+
+  function mean(arr){ if(!arr.length) return null; return arr.reduce((a,b)=>a+b,0)/arr.length; }
+  function cleanSolveVal(v){
+    const s = norm(v);
+    if(!s) return "";
+    if(isDNF(s)) return "DNF";
+    return fmtTime(s);
+  }
+
+  function detectRoundFormat(r){
+    if(r.__isH2H) return "h2h";
+    const solves = [r.s1, r.s2, r.s3, r.s4, r.s5].map(x=>norm(x));
+    const filled = solves.filter(Boolean).length;
+    const hasAo5 = !!norm(r.ao5);
+    const onlyFirstTwo = !!norm(r.s1) && !!norm(r.s2) && !norm(r.s3) && !norm(r.s4) && !norm(r.s5);
+    if(onlyFirstTwo && !hasAo5) return "bo2";
+    if(hasAo5 || filled >= 5) return "ao5";
+    return "single";
+  }
+
+  async function fetchRecords(){
+    const res = await fetch(CSV_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const csvText = await res.text();
+
+    const table = parseCSV(csvText);
+    if(!table.length) return [];
+
+    const headers = table[0].map(h => normKey(h));
+    const dataRows = table.slice(1);
+
+    const records = dataRows
+      .filter(r => r.some(cell => norm(cell) !== ""))
+      .map((r, rowIndex) => {
+        const obj = {};
+        headers.forEach((h, idx) => obj[h] = r[idx] ?? "");
+        obj.__rowIndex = rowIndex;
+        return obj;
+      });
+
+    for(const r of records){
+      r.comp_id     = r.comp_id     || r.compid || r.competition_id || r.comp || "";
+      r.comp_name   = r.comp_name   || r.competition_name || r.competition || r.compname || "";
+      r.comp_date   = r.comp_date   || r.date || r.event_range || r.range || "";
+      if(!r.comp_id && r.comp_name) r.comp_id = r.comp_name;
+
+      r.player_id   = r.player_id   || r.pid || r.id || "";
+      r.name        = r.name        || r.player_name || r.participant_name || "";
+
+      r.event       = r.event       || r.event_name || "";
+      r.age_cat     = r.age_cat     || r.age_category || r.category || "";
+      r.round       = r.round       || r.round_name || "";
+
+      r.s1          = r.s1          || r.solve_1 || "";
+      r.s2          = r.s2          || r.solve_2 || "";
+      r.s3          = r.s3          || r.solve_3 || "";
+      r.s4          = r.s4          || r.solve_4 || "";
+      r.s5          = r.s5          || r.solve_5 || "";
+
+      r.ao5         = r.ao5         || r.avg || r.average || "";
+      r.best_single = r.best_single || r.best || r.bestsolve || r.best_solve || "";
+
+      r.theme_bg = r.theme_bg || "";
+      r.theme_border = r.theme_border || "";
+      r.theme_header = r.theme_header || "";
+      r.theme_accent = r.theme_accent || "";
+      r.theme_chip_bg = r.theme_chip_bg || "";
+      r.theme_chip_text = r.theme_chip_text || "";
+
+      r.h2h_mode         = r.h2h_mode || r.h2h || r.mode || "";
+      r.h2h_round_name   = r.h2h_round_name || r.round_name_h2h || r.h2h_round || "";
+      r.h2h_match_id     = r.h2h_match_id || r.match_id || r.h2h_id || "";
+      r.h2h_bracket      = r.h2h_bracket || r.bracket || r.stage || "";
+      r.h2h_set_no       = r.h2h_set_no || r.set_no || r.set || "";
+      r.h2h_opponent_id  = r.h2h_opponent_id || r.opponent_id || r.opp_id || "";
+      r.best_of_sets     = r.best_of_sets || r.bestof_sets || r.best_of || "";
+      r.sets_to_win      = r.sets_to_win || r.win_sets || r.to_win || "";
+      r.set_winner_id    = r.set_winner_id || "";
+      r.match_winner_id  = r.match_winner_id || "";
+
+      r.__isH2H = truthy(r.h2h_mode) || !!norm(r.h2h_match_id);
+    }
+
+    for(const r of records){
+      r.s1 = cleanSolveVal(r.s1);
+      r.s2 = cleanSolveVal(r.s2);
+      r.s3 = cleanSolveVal(r.s3);
+      r.s4 = cleanSolveVal(r.s4);
+      r.s5 = cleanSolveVal(r.s5);
+
+      r.best_single = norm(r.best_single) ? fmtTime(r.best_single) : "";
+      r.ao5 = norm(r.ao5) ? fmtTime(r.ao5) : "";
+
+      if(r.__isH2H){
+        r.ao5 = "";
+      }
+
+      r.__format = detectRoundFormat(r);
+
+      const sols5 = [r.s1,r.s2,r.s3,r.s4,r.s5];
+
+      if(!norm(r.best_single) || r.best_single === "DNF"){
+        let best = Infinity;
+        for(const s of sols5.filter(x=>norm(x))){
+          best = Math.min(best, toNumOrInf(s));
+        }
+        r.best_single = (best === Infinity) ? "DNF" : fmtTime(best);
+      }
+
+      if(r.__isH2H){
+        r.__hasAo5 = false;
+      } else if(norm(r.ao5)){
+        r.__hasAo5 = true;
+      } else {
+        const computed = computeAo5FromSolves(sols5);
+        if(computed === null){
+          r.ao5 = "";
+          r.__hasAo5 = false;
+        } else {
+          r.ao5 = (computed === Infinity) ? "DNF" : fmtTime(computed);
+          r.__hasAo5 = true;
+        }
+      }
+    }
+
+    return records;
+  }
+
+  function buildProfileRanks(records){
+    const overallGroups = new Map();
+    const ageGroups = new Map();
+    const rankable = records.filter(r => !r.__isH2H);
+
+    for(const r of rankable){
+      const k1 = `${norm(r.comp_id)}||${norm(r.event)}`;
+      const k2 = `${norm(r.comp_id)}||${norm(r.event)}||${norm(r.age_cat)}`;
+      if(!overallGroups.has(k1)) overallGroups.set(k1, []);
+      overallGroups.get(k1).push(r);
+      if(!ageGroups.has(k2)) ageGroups.set(k2, []);
+      ageGroups.get(k2).push(r);
+    }
+
+    function assignAo5Ranks(group, fieldName){
+      const sorted = [...group].sort((a,b)=>{
+        const aoA = a.__hasAo5 ? toNumOrInf(a.ao5) : Infinity;
+        const aoB = b.__hasAo5 ? toNumOrInf(b.ao5) : Infinity;
+        if(aoA !== aoB) return aoA - aoB;
+        const bsA = toNumOrInf(a.best_single), bsB = toNumOrInf(b.best_single);
+        if(bsA !== bsB) return bsA - bsB;
+        return norm(a.name).localeCompare(norm(b.name));
+      });
+
+      let rank=0, prevKey=null, idx=0;
+      for(const r of sorted){
+        idx++;
+        const key = `${r.__hasAo5 ? toNumOrInf(r.ao5) : Infinity}|${toNumOrInf(r.best_single)}`;
+        if(key !== prevKey) rank = idx;
+        prevKey = key;
+        r[fieldName] = rank;
+      }
+    }
+
+    for(const g of overallGroups.values()) assignAo5Ranks(g, "__overallRank");
+    for(const g of ageGroups.values()) assignAo5Ranks(g, "__ageRank");
+  }
+
+  function buildPRIndex(records){
+    const pr = new Map();
+    for(const r of records){
+      const pid = norm(r.player_id);
+      const name = norm(r.name);
+      const ev = norm(r.event);
+      if(!pid || !name || !ev) continue;
+
+      const sBest = toNumOrInf(r.best_single); // includes H2H singles (allowed)
+      const key = `${pid}||${ev}`;
+      if(!pr.has(key)){
+        pr.set(key, { player_id: pid, name, event: ev, bestSingle: sBest, bestAo5: Infinity, hasAo5: false, singleRow: r, ao5Row: null });
+      } else {
+        const cur = pr.get(key);
+        if(sBest < cur.bestSingle){ cur.bestSingle = sBest; cur.singleRow = r; }
+      }
+
+      if(r.__hasAo5){
+        const ao = toNumOrInf(r.ao5);
+        const cur = pr.get(key);
+        cur.hasAo5 = true;
+        if(ao < cur.bestAo5){
+          cur.bestAo5 = ao;
+          cur.ao5Row = r;
+        } else if(cur.ao5Row === null && cur.bestAo5 === Infinity){
+          cur.ao5Row = r;
+        }
+      }
+    }
+    return Array.from(pr.values());
+  }
+
+  function buildRankLookup(prRows){
+    const lookup = { single: new Map(), ao5: new Map() };
+
+    function assignForMode(mode){
+      const metric = (mode === "single") ? "bestSingle" : "bestAo5";
+      const byEvent = new Map();
+
+      for(const r of prRows){
+        if(mode === "ao5" && !r.hasAo5) continue;
+        const ev = norm(r.event);
+        if(!byEvent.has(ev)) byEvent.set(ev, []);
+        byEvent.get(ev).push(r);
+      }
+
+      for(const [ev, arr] of byEvent.entries()){
+        const sorted = [...arr].sort((a,b)=>{
+          const ta=a[metric], tb=b[metric];
+          if(ta !== tb) return ta - tb;
+          return a.name.localeCompare(b.name);
+        });
+
+        let rank=0, idx=0, prevTime=null;
+        const map = new Map();
+        for(const row of sorted){
+          idx++;
+          const t = row[metric];
+          if(prevTime === null || t !== prevTime) rank = idx;
+          prevTime = t;
+          map.set(row.player_id, { rank, time: t });
+        }
+        lookup[mode].set(ev, map);
+      }
+    }
+
+    assignForMode("single");
+    assignForMode("ao5");
+    return lookup;
+  }
+
+  function buildEventListFromRecords(records){
+    const set = new Set();
+    for(const r of records){
+      const ev = norm(r.event);
+      if(ev) set.add(ev);
+    }
+    const list = Array.from(set.values());
+    list.sort((a,b)=>{
+      const ka=eventSortKey(a), kb=eventSortKey(b);
+      if(ka !== kb) return ka-kb;
+      return a.localeCompare(b);
+    });
+    return list;
+  }
+
+  function buildCompetitionList(records){
+    const map = new Map();
+    for(const r of records){
+      const cid = norm(r.comp_id);
+      if(!cid) continue;
+      const cname = norm(r.comp_name) || cid;
+
+      const {start, end} = parseDateRange(r.comp_date);
+      const minTs = start;
+      const maxTs = end;
+
+      if(!map.has(cid)){
+        map.set(cid, { comp_id: cid, comp_name: cname, minTs, maxTs, sampleRow: r });
+      } else {
+        const o = map.get(cid);
+        if(cname && o.comp_name === o.comp_id) o.comp_name = cname;
+        if(minTs && (!o.minTs || minTs < o.minTs)) o.minTs = minTs;
+        if(maxTs && (!o.maxTs || maxTs > o.maxTs)) o.maxTs = maxTs;
+      }
+    }
+    return Array.from(map.values()).sort((a,b)=> (b.maxTs||0) - (a.maxTs||0));
+  }
+
+  function computePRRows(mineAll){
+    const map = new Map();
+    for(const r of mineAll){
+      const ev = norm(r.event);
+      if(!ev) continue;
+
+      const bs = toNumOrInf(r.best_single);
+
+      if(!map.has(ev)){
+        map.set(ev, { event: ev, bestSingle: bs, bestAo5: Infinity, hasAo5: false });
+      } else {
+        const cur = map.get(ev);
+        cur.bestSingle = Math.min(cur.bestSingle, bs);
+      }
+
+      if(r.__hasAo5){
+        const ao = toNumOrInf(r.ao5);
+        const cur = map.get(ev);
+        cur.hasAo5 = true;
+        cur.bestAo5 = Math.min(cur.bestAo5, ao);
+      }
+    }
+
+    const arr = Array.from(map.values()).map(x => ({
+      event: x.event,
+      bestSingle: (x.bestSingle === Infinity) ? "DNF" : fmtTime(x.bestSingle),
+      bestAo5: (!x.hasAo5) ? "" : ((x.bestAo5 === Infinity) ? "DNF" : fmtTime(x.bestAo5)),
+      bestSingleNum: x.bestSingle,
+      bestAo5Num: x.bestAo5,
+      hasAo5: x.hasAo5
+    }));
+
+    arr.sort((a,b)=>{
+      const ka=eventSortKey(a.event), kb=eventSortKey(b.event);
+      if(ka !== kb) return ka-kb;
+      return a.event.localeCompare(b.event);
+    });
+    return arr;
+  }
+
+  /* ===== Segmented buttons ===== */
+  function setSegActive(btn, on){
+    btn.classList.toggle("active", !!on);
+  }
+
+  function setHomeTab(which){
+    const isR = which === "rankings";
+    const isP = which === "participants";
+    const isC = which === "competitions";
+
+    rankingsTab.style.display = isR ? "block" : "none";
+    participantsTab.style.display = isP ? "block" : "none";
+    competitionsTab.style.display = isC ? "block" : "none";
+
+    setSegActive(tabRankings, isR);
+    setSegActive(tabParticipants, isP);
+    setSegActive(tabCompetitions, isC);
+  }
+
+  /* ===== Participants (with pagination) ===== */
+  let sortMode = "ID";
+  let participantsPage = 1;
+  function applySortButtons(){
+    setSegActive(sortIdBtn, sortMode === "ID");
+    setSegActive(sortAzBtn, sortMode === "AZ");
+  }
+  function sortPlayers(players){
+    const copy=[...players];
+    if(sortMode === "AZ"){
+      copy.sort((a,b)=> a.name.localeCompare(b.name));
+      return copy;
+    }
+    copy.sort((a,b)=>{
+      const na = Number(a.player_id), nb = Number(b.player_id);
+      if(Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+      return a.player_id.localeCompare(b.player_id);
+    });
+    return copy;
+  }
+
+  function renderParticipants(playersRaw){
+    function draw(list){
+      if(!list.length){
+        participantList.innerHTML = `<div style="padding:14px;">No participants found.</div>`;
+        return;
+      }
+
+      const paged = slicePage(list, participantsPage, DEFAULT_PAGE_SIZE);
+
+      participantList.innerHTML =
+        paged.items.map(p => `
+          <a href="/participant-profile-page?pid=${encodeURIComponent(p.player_id)}"
+            style="display:flex; justify-content:space-between; gap:10px; padding:14px; border-bottom:1px solid #eee; text-decoration:none;">
+            <div style="font-weight:950; color:#111;">${safeHtml(p.name)}</div>
+            <div style="opacity:0.75; color:#111; font-weight:950;">ID: ${safeHtml(p.player_id)}</div>
+          </a>
+        `).join("")
+        + renderPagerHtml(paged.page, paged.pages, paged.total);
+
+      bindPager(participantList, paged.page, paged.pages, (p)=>{
+        participantsPage = p;
+        draw(list);
+      });
+    }
+
+    function applySearch(){
+      const q = norm(searchBox.value).toLowerCase();
+      let base = sortPlayers(playersRaw);
+      if(q) base = base.filter(p => p.name.toLowerCase().includes(q));
+      participantsPage = 1;
+      draw(base);
+    }
+
+    searchBox.addEventListener("input", applySearch);
+    clearBtn.addEventListener("click", ()=>{
+      searchBox.value="";
+      applySearch();
+      searchBox.focus();
+    });
+
+    sortIdBtn.addEventListener("click", ()=>{ sortMode="ID"; applySortButtons(); applySearch(); });
+    sortAzBtn.addEventListener("click", ()=>{ sortMode="AZ"; applySortButtons(); applySearch(); });
+
+    applySortButtons();
+    applySearch();
+  }
+
+  /* ===== Competitions (with pagination) ===== */
+  let competitionsPage = 1;
+  function renderCompetitions(comps){
+    compStatus.innerHTML = "";
+    if(!comps.length){
+      competitionList.innerHTML = `<div style="padding:14px;">No competitions found.</div>`;
+      return;
+    }
+
+    const paged = slicePage(comps, competitionsPage, DEFAULT_PAGE_SIZE);
+
+    competitionList.innerHTML =
+      paged.items.map(c=>{
+        const link = getCompLink(c.sampleRow || {});
+        const range = formatRange(c.minTs, c.maxTs);
+        const theme = getCompTheme(c.sampleRow || {});
+        return `
+          <div style="
+            padding:14px;
+            border-bottom:1px solid rgba(0,0,0,0.08);
+            display:flex;
+            justify-content:space-between;
+            gap:12px;
+            flex-wrap:wrap;
+            align-items:center;
+            background:${theme.cardBg};
+            border-left:4px solid ${theme.border};
+            color:${theme.text};
+          ">
+            <div>
+              <div style="font-weight:950; font-size:16px; color:${theme.text};">${safeHtml(c.comp_name)}</div>
+              <div style="margin-top:4px; font-weight:900; font-size:12px; color:${theme.muted};">${safeHtml(range)}</div>
+            </div>
+            ${
+              link
+                ? `<a href="${link}" style="padding:10px 12px; border-radius:12px; border:1px solid ${theme.border}; background:${theme.surface2}; font-weight:950; text-decoration:none; color:${theme.__fixed ? (theme.buttonText || theme.text) : ensureTextOn(theme.surface2, theme.text)};">
+                    View Results →
+                  </a>`
+                : `<span style="padding:10px 12px; border-radius:12px; border:1px solid ${theme.border}; background:${theme.surface2}; font-weight:900; opacity:0.9; color:${theme.text};">
+                    No link
+                  </span>`
+            }
+          </div>
+        `;
+      }).join("")
+      + renderPagerHtml(paged.page, paged.pages, paged.total);
+
+    bindPager(competitionList, paged.page, paged.pages, (p)=>{
+      competitionsPage = p;
+      renderCompetitions(comps);
+    });
+  }
+
+  let PR_ROWS = [];
+  let RANK_EVENTS = [];
+  let selectedRankEvent = null;
+  let rankMode = "single";
+  let RANK_LOOKUP = null;
+
+  let rankingsPage = 1;
+
+  function eventHasAo5Leaderboard(ev){
+    if(!RANK_LOOKUP || !RANK_LOOKUP.ao5) return false;
+    const map = RANK_LOOKUP.ao5.get(ev);
+    return !!(map && map.size);
+  }
+
+  function updateAo5ToggleAvailability(){
+    const has = eventHasAo5Leaderboard(selectedRankEvent);
+    rankModeAo5.style.opacity = has ? "1" : "0.45";
+    rankModeAo5.style.cursor = has ? "pointer" : "not-allowed";
+    rankModeAo5.setAttribute("aria-disabled", has ? "false" : "true");
+  }
+
+  function renderRankTabs(){
+    if(!RANK_EVENTS.length){
+      rankEventTabs.innerHTML = "";
+      return;
+    }
+    rankEventTabs.innerHTML = RANK_EVENTS.map(ev=>{
+      const active = norm(ev) === norm(selectedRankEvent);
+      return `
+        <button type="button" data-ev="${safeHtml(ev)}"
+          style="flex:0 0 auto; padding:10px 12px; border-radius:999px; border:2px solid ${active ? "#d62828" : "#ddd"};
+          background:${active ? "#fff5f5" : "#fff"}; font-weight:950; cursor:pointer; white-space:nowrap;">
+          ${safeHtml(ev)}
+        </button>
+      `;
+    }).join("");
+    rankEventTabs.querySelectorAll("button[data-ev]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        selectedRankEvent = btn.getAttribute("data-ev");
+        if(rankEventSelect) rankEventSelect.value = selectedRankEvent;
+        rankingsPage = 1;
+        renderRankTabs();
+        updateAo5ToggleAvailability();
+        if(rankMode === "ao5" && !eventHasAo5Leaderboard(selectedRankEvent)){
+          setRankMode("single");
+          return;
+        }
+        renderRankTable();
+      });
+    });
+  }
+
+  function setRankMode(mode){
+    if(mode === "ao5" && !eventHasAo5Leaderboard(selectedRankEvent)){
+      rankMode = "single";
+    } else {
+      rankMode = mode;
+    }
+    setSegActive(rankModeSingle, rankMode === "single");
+    setSegActive(rankModeAo5, rankMode === "ao5");
+    updateAo5ToggleAvailability();
+    rankingsPage = 1;
+    renderRankTable();
+  }
+
+  function renderRankDropdown(){
+    if(!rankEventSelect) return;
+    rankEventSelect.innerHTML = (RANK_EVENTS || []).map(ev =>
+      `<option value="${safeHtml(ev)}">${safeHtml(ev)}</option>`
+    ).join("");
+    if(selectedRankEvent) rankEventSelect.value = selectedRankEvent;
+
+    rankEventSelect.onchange = ()=>{
+      selectedRankEvent = rankEventSelect.value;
+      rankingsPage = 1;
+      renderRankTabs();
+      updateAo5ToggleAvailability();
+      if(rankMode === "ao5" && !eventHasAo5Leaderboard(selectedRankEvent)){
+        setRankMode("single");
+        return;
+      }
+      renderRankTable();
+    };
+  }
+
+  /* ===== Rankings table (with pagination) ===== */
+  function renderRankTable(){
+    const q = norm(rankSearch.value).toLowerCase();
+    const metric = (rankMode === "single") ? "bestSingle" : "bestAo5";
+
+    if(rankMode === "ao5" && !eventHasAo5Leaderboard(selectedRankEvent)){
+      rankTableWrap.innerHTML = `<div style="padding:14px;">No Ao5 rankings for <b>${safeHtml(selectedRankEvent)}</b> yet. This event is currently ranked by <b>Single</b> only.</div>`;
+      return;
+    }
+
+    const rows = PR_ROWS
+      .filter(r => norm(r.event) === norm(selectedRankEvent))
+      .filter(r => !q || r.name.toLowerCase().includes(q))
+      .filter(r => (rankMode === "single") ? true : r.hasAo5);
+
+    rows.sort((a,b)=>{
+      const ta=a[metric], tb=b[metric];
+      if(ta !== tb) return ta - tb;
+      return a.name.localeCompare(b.name);
+    });
+
+    if(!rows.length){
+      rankTableWrap.innerHTML = `<div style="padding:14px;">No rankings found.</div>`;
+      return;
+    }
+
+    const header = `
+      <div class="rankRow rankHeader">
+        <div>#</div>
+        <div>Name</div>
+        <div class="rankCellRight">${rankMode === "single" ? "Single" : "Ao5"}</div>
+      </div>
+    `;
+
+    const paged = slicePage(rows, rankingsPage, DEFAULT_PAGE_SIZE);
+
+    const body = paged.items.map((r, localIdx)=>{
+      const globalIdx = (paged.page - 1) * DEFAULT_PAGE_SIZE + localIdx + 1;
+
+      const rowRef = (rankMode === "single") ? r.singleRow : (r.ao5Row || r.singleRow);
+      const compName = norm(rowRef.comp_name) || norm(rowRef.comp_id) || "Competition";
+      const link = getCompLink(rowRef);
+
+      const timeNum = r[metric];
+      const timeStr = (timeNum === Infinity) ? "DNF" : fmtTime(timeNum);
+
+      const compLine = link
+        ? `<div class="rankCompLine">from <a href="${link}">${safeHtml(compName)}</a></div>`
+        : `<div class="rankCompLine">from ${safeHtml(compName)}</div>`;
+
+      return `
+        <div class="rankRow">
+          <div style="font-weight:950;">${globalIdx}</div>
+          <div>
+            <a class="rankName" href="/participant-profile-page?pid=${encodeURIComponent(r.player_id)}">
+              ${safeHtml(r.name)}
+            </a>
+            ${compLine}
+          </div>
+          <div class="rankCellRight">${safeHtml(timeStr)}</div>
+        </div>
+      `;
+    }).join("");
+
+    const pager = renderPagerHtml(paged.page, paged.pages, paged.total);
+
+    rankTableWrap.innerHTML = header + body + pager;
+
+    bindPager(rankTableWrap, paged.page, paged.pages, (p)=>{
+      rankingsPage = p;
+      renderRankTable();
+    });
+  }
+
+  function setProfileMainTab(which){
+    const isResults = which === "results";
+    profileTabResults.classList.toggle("active", isResults);
+    profileTabStats.classList.toggle("active", !isResults);
+    resultsTopArea.style.display = isResults ? "block" : "none";
+    eventResultsEl.style.display = isResults ? "block" : "none";
+    statsArea.style.display = isResults ? "none" : "block";
+  }
+
+  function setStatsTab(which){
+    const isOverview = which === "overview";
+    statsTabOverview.classList.toggle("active", isOverview);
+    statsTabMisc.classList.toggle("active", !isOverview);
+    statsOverview.style.display = isOverview ? "block" : "none";
+    statsMisc.style.display = isOverview ? "none" : "block";
+  }
+
+  /* ===== Stats (FIXED: logical + data-driven) ===== */
+  function countAttemptsDnfs(rows){
+    let attempts = 0, dnfs = 0;
+    for(const r of rows){
+      const sols = [r.s1, r.s2, r.s3, r.s4, r.s5];
+      for(const s of sols){
+        const v = norm(s);
+        if(!v) continue;
+        attempts++;
+        if(isDNF(v)) dnfs++;
+      }
+    }
+    return { attempts, dnfs, dnfRate: attempts ? (dnfs/attempts) : null };
+  }
+
+  function getGlobalRankFromLookup(pidStr, ev, mode, lookup){
+    const map = lookup && lookup[mode] && lookup[mode].get(ev);
+    if(!map) return null;
+    const entry = map.get(String(pidStr).trim());
+    return entry ? entry.rank : null;
+  }
+
+  function bestEventByRank(prRows, pidStr, mode, lookup){
+    // mode: "single" or "ao5"
+    let best = null;
+    for(const r of prRows){
+      if(mode === "ao5" && !r.hasAo5) continue;
+      const rk = getGlobalRankFromLookup(pidStr, r.event, mode, lookup);
+      if(!rk) continue;
+
+      const timeNum = (mode === "single") ? r.bestSingleNum : r.bestAo5Num;
+      const timeStr = (timeNum === Infinity) ? "DNF" : fmtTime(timeNum);
+
+      const candidate = { event: r.event, rank: rk, timeStr, timeNum };
+
+      if(!best) best = candidate;
+      else if(candidate.rank < best.rank) best = candidate;
+      else if(candidate.rank === best.rank && candidate.timeNum < best.timeNum) best = candidate;
+    }
+    return best;
+  }
+
+  function eventRows(mineAll, ev){ return mineAll.filter(r => norm(r.event) === norm(ev)); }
+
+  function computeEventAo5Timeline(rows){
+    // only non-H2H AO5 means correct. Ignore H2H.
+    const ao5Rows = rows
+      .filter(r => !r.__isH2H && r.__hasAo5 && norm(r.ao5))
+      .map(r=>{
+        const t = toNumOrInf(r.ao5);
+        const dr = parseDateRange(r.comp_date);
+        const dt = dr.end || dr.start || 0;
+        return { t, dt, idx: r.__rowIndex || 0, raw: r.ao5 };
+      })
+      .filter(x => Number.isFinite(x.t)); // keep DNFs as Infinity out for trends (more meaningful)
+    ao5Rows.sort((a,b)=>{
+      if(a.dt !== b.dt) return a.dt - b.dt;
+      return a.idx - b.idx;
+    });
+    return ao5Rows;
+  }
+
+  function diffBadge(prev, last){
+    if(prev == null || last == null) return { html: "—", sub: "Need at least 2 Ao5 entries" };
+
+    const diff = last - prev; // negative = improved
+    const abs = Math.abs(diff);
+    const txt = `${diff < 0 ? "-" : "+"}${abs.toFixed(2)}s`;
+    const good = diff < 0;
+
+    const color = good ? "#16a34a" : "#ef4444";
+    const bg = good ? "#ecfdf5" : "#fef2f2";
+    const border = good ? "#16a34a" : "#ef4444";
+
+    return {
+      html: `<span style="display:inline-flex; padding:6px 10px; border-radius:999px; border:1px solid ${border}; background:${bg}; color:${color}; font-weight:950;">${txt}</span>`,
+      sub: good ? "Improved (faster)" : "Slower than before"
+    };
+  }
+
+  function renderStats(mineAll, prRows, playerEvents, rankLookup){
+    // OVERVIEW (participant-wide)
+    const totals = countAttemptsDnfs(mineAll);
+    const dnfRateStr = (totals.dnfRate == null) ? "—" : `${(totals.dnfRate*100).toFixed(1)}%`;
+
+    const bestSingleEv = bestEventByRank(prRows, pid, "single", rankLookup);
+    const bestAo5Ev = bestEventByRank(prRows, pid, "ao5", rankLookup);
+
+    const bestSingleText = bestSingleEv
+      ? `${safeHtml(bestSingleEv.event)} • #${bestSingleEv.rank} • ${safeHtml(bestSingleEv.timeStr)}`
+      : "—";
+
+    const bestAo5Text = bestAo5Ev
+      ? `${safeHtml(bestAo5Ev.event)} • #${bestAo5Ev.rank} • ${safeHtml(bestAo5Ev.timeStr)}`
+      : "—";
+
+    statsOverview.innerHTML = `
+      <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center;">
+        <div style="font-weight:950;">Overview</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="statBadge">Total Solves: ${totals.attempts}</span>
+          <span class="statBadge">DNFs: ${totals.dnfs}</span>
+          <span class="statBadge">DNF Rate: ${safeHtml(dnfRateStr)}</span>
+        </div>
+      </div>
+
+      <div class="statsGrid">
+        <div class="statCard">
+          <div class="statLabel">Best Event (Single Rank)</div>
+          <div class="statValue">${bestSingleText}</div>
+          <div class="statSub">Event where the participant ranks highest (lowest rank number)</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Best Event (Ao5 Rank)</div>
+          <div class="statValue">${bestAo5Text}</div>
+          <div class="statSub">Only competitions where Ao5 exists (H2H excluded)</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Solve History</div>
+          <div class="statValue">${totals.attempts} attempts</div>
+          <div class="statSub">${totals.dnfs} DNFs • ${safeHtml(dnfRateStr)} DNF rate</div>
+        </div>
+      </div>
+    `;
+
+    // MISC (per-event)
+    const evOptions = playerEvents.map(ev => `<option value="${safeHtml(ev)}">${safeHtml(ev)}</option>`).join("");
+    statsMisc.innerHTML = `
+      <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center;">
+        <div style="font-weight:950;">Misc (Event Insights)</div>
+      </div>
+
+      <div class="selectWrap">
+        <label for="miscEventSelect">Select event</label>
+        <select id="miscEventSelect">${evOptions}</select>
+      </div>
+
+      <div id="miscEventPanel" style="margin-top:12px;"></div>
+    `;
+
+    const select = document.getElementById("miscEventSelect");
+    const panel = document.getElementById("miscEventPanel");
+    const defaultEv = playerEvents[0] || "";
+    if(defaultEv) select.value = defaultEv;
+
+    function findPrForEvent(ev){
+      return prRows.find(x => norm(x.event) === norm(ev)) || null;
+    }
+
+    function renderMiscForEvent(ev){
+      const rows = eventRows(mineAll, ev);
+
+      const totalsEv = countAttemptsDnfs(rows);
+      const dnfRateEvStr = (totalsEv.dnfRate == null) ? "—" : `${(totalsEv.dnfRate*100).toFixed(1)}%`;
+
+      const pr = findPrForEvent(ev);
+      const prSingle = pr ? pr.bestSingle : "—";
+      const prAo5 = (pr && pr.hasAo5) ? (pr.bestAo5 || "DNF") : "—";
+
+      // trend based ONLY on non-H2H Ao5
+      const ao5Timeline = computeEventAo5Timeline(rows);
+      const firstAo5 = ao5Timeline.length ? ao5Timeline[0].t : null;
+      const lastAo5 = ao5Timeline.length ? ao5Timeline[ao5Timeline.length - 1].t : null;
+      const prevAo5 = (ao5Timeline.length >= 2) ? ao5Timeline[ao5Timeline.length - 2].t : null;
+
+      const recentDiff = diffBadge(prevAo5, lastAo5);
+      const overallDiff = diffBadge(firstAo5, lastAo5);
+
+      const firstText = firstAo5 == null ? "—" : fmtTime(firstAo5);
+      const lastText  = lastAo5 == null ? "—" : fmtTime(lastAo5);
+
+      panel.innerHTML = `
+        <div class="statsGrid">
+          <div class="statCard">
+            <div class="statLabel">PR Single (${safeHtml(ev)})</div>
+            <div class="statValue">${safeHtml(prSingle)}</div>
+            <div class="statSub">Includes H2H singles (Ao5 never uses H2H)</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">PR Ao5 (${safeHtml(ev)})</div>
+            <div class="statValue">${safeHtml(prAo5)}</div>
+            <div class="statSub">Only when Ao5 exists for this event</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">Solves & DNFs (${safeHtml(ev)})</div>
+            <div class="statValue">${totalsEv.attempts} solves</div>
+            <div class="statSub">${totalsEv.dnfs} DNFs • ${safeHtml(dnfRateEvStr)} DNF rate</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">Recent Ao5 Change</div>
+            <div class="statValue">${recentDiff.html}</div>
+            <div class="statSub">Previous Ao5 → Latest Ao5 (${safeHtml(lastText)})</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">Overall Ao5 Improvement</div>
+            <div class="statValue">${overallDiff.html}</div>
+            <div class="statSub">First Ao5 (${safeHtml(firstText)}) → Latest Ao5 (${safeHtml(lastText)})</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">Ao5 Coverage</div>
+            <div class="statValue">${ao5Timeline.length}</div>
+            <div class="statSub">Number of Ao5 entries found (non-H2H only)</div>
+          </div>
+        </div>
+      `;
+    }
+
+    select.addEventListener("change", ()=> renderMiscForEvent(select.value));
+    renderMiscForEvent(select.value);
+  }
+
+  /* ===== H2H helpers (unchanged) ===== */
+  function intOrNull(v){
+    const n = Number(String(v||"").trim());
+    return Number.isFinite(n) ? n : null;
+  }
+  function h2hKeyRow(r){
+    return `${norm(r.comp_id)}||${norm(r.event)}||${norm(r.h2h_match_id)}||${norm(r.h2h_set_no)}`;
+  }
+  function cmpByCompDateDesc(a, b) {
+    const ta = parseDateRange(a.comp_date).end || parseDateRange(a.comp_date).start || 0;
+    const tb = parseDateRange(b.comp_date).end || parseDateRange(b.comp_date).start || 0;
+    return tb - ta;
+  }
+  function getSolves5(r){ return [r.s1,r.s2,r.s3,r.s4,r.s5].map(x=>norm(x)); }
+  function compareSolve(aRaw, bRaw){
+    const a = toNumOrInf(aRaw);
+    const b = toNumOrInf(bRaw);
+    if(a === b) return 0;
+    if(a < b) return -1;
+    return 1;
+  }
+  function computeSetWinCounts(rowMe, rowOpp){
+    const a = getSolves5(rowMe);
+    const b = getSolves5(rowOpp);
+    let me=0, opp=0, total=0;
+    for(let i=0;i<5;i++){
+      if(!a[i] || !b[i]) continue;
+      total++;
+      const c = compareSolve(a[i], b[i]);
+      if(c < 0) me++;
+      else if(c > 0) opp++;
+    }
+    return { me, opp, total };
+  }
+  function h2hFormatFromBestOfSets(v){
+    const n = intOrNull(v);
+    if(!n) return "";
+    return `Bo${n} Sets`;
+  }
+  function renderH2HSetTableRow(playerLabel, pidValue, timesArr, outcomeArr, scoreNum, theme){
+    const nameLink = `<a class="h2hNameLink" href="/participant-profile-page?pid=${encodeURIComponent(pidValue)}">${safeHtml(playerLabel)}</a>`;
+    const scoreBadge = `
+      <span class="h2hMiniScore" style="border-color:${theme.border};color:${theme.text};">
+        ${scoreNum}
+      </span>
+    `;
+    const cells = timesArr.map((t,i)=>{
+      const cls =
+        outcomeArr[i]==="win" ? "h2hTimeCell h2hTimeWin" :
+        outcomeArr[i]==="lose"? "h2hTimeCell h2hTimeLose" :
+        outcomeArr[i]==="tie" ? "h2hTimeCell h2hTimeTie" :
+        "h2hTimeCell";
+      return `<div class="${cls}">${t ? fmtTime(t) : "—"}</div>`;
+    }).join("");
+
+    return `
+      <div class="h2hNameRow">
+        <span class="h2hNameText">${nameLink}</span>
+        ${scoreBadge}
+      </div>
+      ${cells}
+    `;
+  }
+
+  (async function init(){
+    try{
+      const records = await fetchRecords();
+      buildProfileRanks(records);
+
+      PR_ROWS = buildPRIndex(records);
+      const RANK_LOOKUP_LOCAL = buildRankLookup(PR_ROWS);
+      RANK_LOOKUP = RANK_LOOKUP_LOCAL;
+
+      const h2hSetIndex = new Map();
+      for(const r of records){
+        if(!r.__isH2H) continue;
+        if(!norm(r.h2h_match_id) || !norm(r.h2h_set_no)) continue;
+        const key = h2hKeyRow(r);
+        if(!h2hSetIndex.has(key)) h2hSetIndex.set(key, []);
+        h2hSetIndex.get(key).push(r);
+      }
+
+      function renderProfile(){
+        homeView.style.display = "none";
+        profileView.style.display = "block";
+        statusEl.style.display = "none";
+        statusEl.innerHTML = "";
+
+        const mineAll = records.filter(r => String(r.player_id).trim() === String(pid).trim());
+        if(!mineAll.length){
+          statusEl.style.display = "block";
+          statusEl.innerHTML = `<b>No records found</b> for <code>${safeHtml(pid)}</code>.`;
+          return;
+        }
+
+        const playerName = norm(mineAll[0].name);
+        playerTitleEl.textContent = playerName;
+        playerIdBadgeEl.textContent = `ID: ${pid}`;
+
+        copyProfileBtn.onclick = async ()=>{
+          const url = window.location.href;
+          try{
+            await navigator.clipboard.writeText(url);
+            const old = copyProfileBtn.textContent;
+            copyProfileBtn.textContent = "Copied!";
+            setTimeout(()=> copyProfileBtn.textContent = old, 1200);
+          } catch(e){
+            alert("Copy failed. Please copy manually:\n" + url);
+          }
+        };
+
+        const comps = new Set(mineAll.map(r => norm(r.comp_id)).filter(Boolean));
+        const events = new Set(mineAll.map(r => norm(r.event)).filter(Boolean));
+        playerSubtitleEl.textContent = `${comps.size} competition${comps.size===1?"":"s"} • ${events.size} event${events.size===1?"":"s"}`;
+
+        const prRows = computePRRows(mineAll);
+
+        function getGlobalRank(ev, mode){
+          const map = RANK_LOOKUP_LOCAL[mode].get(ev);
+          if(!map) return null;
+          const entry = map.get(String(pid).trim());
+          return entry ? entry.rank : null;
+        }
+        function rankBadge(r){
+          const n = Number(r);
+          if(!Number.isFinite(n) || n<=0) return "";
+          return `<span class="prMiniBadge">#${n}</span>`;
+        }
+
+        prGrid.innerHTML = prRows.length ? `
+          <div class="prDesktopTable" style="border:1px solid #eee; border-radius:14px; overflow:hidden; background:#fff;">
+            <div style="display:grid; grid-template-columns: 1.2fr 0.9fr 0.9fr; gap:0; padding:10px 12px; background:#f3f4f6; font-weight:950;">
+              <div>Event</div>
+              <div style="text-align:right;">PR Single</div>
+              <div style="text-align:right;">PR Avg</div>
+            </div>
+            ${prRows.map(r=>{
+              const rs = (r.bestSingleNum === Infinity) ? null : getGlobalRank(r.event, "single");
+              const ra = (!r.hasAo5 || r.bestAo5Num === Infinity) ? null : getGlobalRank(r.event, "ao5");
+              const avgText = r.hasAo5 ? (r.bestAo5 || "DNF") : "—";
+              return `
+                <div style="display:grid; grid-template-columns: 1.2fr 0.9fr 0.9fr; gap:0; padding:10px 12px; border-top:1px solid #eee;">
+                  <div style="font-weight:950;">${safeHtml(r.event)}</div>
+                  <div style="text-align:right; font-weight:950;">
+                    ${safeHtml(r.bestSingle)} ${rankBadge(rs)}
+                  </div>
+                  <div style="text-align:right; font-weight:950;">
+                    ${safeHtml(avgText)} ${ra ? rankBadge(ra) : ""}
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <div class="prMobileSlider" aria-label="PR swipe cards">
+            ${prRows.map(r=>{
+              const rs = (r.bestSingleNum === Infinity) ? null : getGlobalRank(r.event, "single");
+              const ra = (!r.hasAo5 || r.bestAo5Num === Infinity) ? null : getGlobalRank(r.event, "ao5");
+              const avgText = r.hasAo5 ? (r.bestAo5 || "DNF") : "—";
+              return `
+                <div class="prCard">
+                  <div class="prCardTitle">${safeHtml(r.event)}</div>
+                  <div class="prCardRow">
+                    <div>
+                      <div class="prCardLabel">PR Single</div>
+                      <div class="prCardValue">${safeHtml(r.bestSingle)} ${rankBadge(rs)}</div>
+                    </div>
+                  </div>
+                  <div class="prCardRow">
+                    <div>
+                      <div class="prCardLabel">PR Avg</div>
+                      <div class="prCardValue">${safeHtml(avgText)} ${ra ? rankBadge(ra) : ""}</div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        ` : `<div style="opacity:0.7;">No PR data available.</div>`;
+
+        prGrid.style.display = "block";
+        prToggleBtn.textContent = "Hide PR";
+        prToggleBtn.onclick = ()=>{
+          const open = prGrid.style.display !== "none";
+          prGrid.style.display = open ? "none" : "block";
+          prToggleBtn.textContent = open ? "Show PR" : "Hide PR";
+        };
+
+        profileTabResults.onclick = ()=> setProfileMainTab("results");
+        profileTabStats.onclick = ()=> setProfileMainTab("stats");
+        setProfileMainTab("results");
+
+        statsTabOverview.onclick = ()=> setStatsTab("overview");
+        statsTabMisc.onclick = ()=> setStatsTab("misc");
+        setStatsTab("overview");
+
+        const playerEvents = Array.from(events.values()).sort((a,b)=>{
+          const ka=eventSortKey(a), kb=eventSortKey(b);
+          if(ka !== kb) return ka-kb;
+          return a.localeCompare(b);
+        });
+
+        // ✅ Updated useful stats
+        renderStats(mineAll, prRows, playerEvents, RANK_LOOKUP_LOCAL);
+
+        let selectedEvent = playerEvents[0];
+        let selected3x3SubMode = "ao5";
+
+        function toggleBtn(ev, active){
+          return `<button type="button" data-evt="${safeHtml(ev)}"
+            style="padding:10px 12px; border-radius:999px; border:2px solid ${active ? "#d62828" : "#ddd"};
+            background:${active ? "#fff5f5" : "#fff"}; font-weight:950; cursor:pointer;">
+            ${safeHtml(ev)}
+          </button>`;
+        }
+
+        function renderEventToggles(){
+          eventTogglesEl.innerHTML = playerEvents.map(ev => toggleBtn(ev, ev===selectedEvent)).join("");
+          eventTogglesEl.querySelectorAll("button[data-evt]").forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+              selectedEvent = btn.getAttribute("data-evt");
+              if(norm(selectedEvent).toLowerCase() !== "3x3") selected3x3SubMode = "ao5";
+              renderEventToggles();
+              renderSelectedEvent();
+            });
+          });
+        }
+
+        function render3x3SubToggle(hasH2H){
+          if(!hasH2H) return "";
+          const a = selected3x3SubMode === "ao5";
+          const b = selected3x3SubMode === "h2h";
+          return `
+            <div class="h2hModeTabs">
+              <button type="button" class="h2hModeBtn ${a ? "active":""}" data-3mode="ao5">Ao5 Rounds</button>
+              <button type="button" class="h2hModeBtn ${b ? "active":""}" data-3mode="h2h">Head-to-Head</button>
+            </div>
+          `;
+        }
+
+        function renderSelectedEvent(){
+          const allRows = mineAll.filter(r => norm(r.event) === norm(selectedEvent));
+          allRows.sort(cmpByCompDateDesc);
+
+          const hasH2H = norm(selectedEvent).toLowerCase() === "3x3" && allRows.some(r => r.__isH2H);
+
+          let html = `
+            <div style="border:1px solid #ddd; border-radius:14px; padding:16px; background:#fff;">
+              <div style="font-size:18px; font-weight:950;">${safeHtml(selectedEvent)} Results</div>
+              ${render3x3SubToggle(hasH2H)}
+              <div style="margin-top:16px;"></div>
+          `;
+
+          if(hasH2H && selected3x3SubMode === "h2h"){
+            const myH2H = allRows.filter(r => r.__isH2H);
+
+            const byComp = new Map();
+            for(const r of myH2H){
+              const cid = norm(r.comp_id);
+              if(!byComp.has(cid)) byComp.set(cid, []);
+              byComp.get(cid).push(r);
+            }
+
+            const compList = Array.from(byComp.entries()).sort((A,B)=>{
+              const a = A[1][0], b = B[1][0];
+              return cmpByCompDateDesc(a,b);
+            });
+
+            const theme = getCubingClashTheme();
+
+            html += compList.map(([cid, rows])=>{
+              rows.sort((a,b)=> (b.__rowIndex||0)-(a.__rowIndex||0));
+              const ref = rows[0];
+              const compName = norm(ref.comp_name) || cid;
+
+              const byMatch = new Map();
+              for(const r of rows){
+                const mid = norm(r.h2h_match_id) || "match";
+                if(!byMatch.has(mid)) byMatch.set(mid, []);
+                byMatch.get(mid).push(r);
+              }
+
+              const matchGroups = Array.from(byMatch.entries()).sort((A,B)=>{
+                const maxA = Math.max(...A[1].map(x=>x.__rowIndex||0));
+                const maxB = Math.max(...B[1].map(x=>x.__rowIndex||0));
+                return maxB - maxA;
+              });
+
+              const matchesHtml = matchGroups.map(([matchId, matchRows])=>{
+                matchRows.sort((a,b)=> (intOrNull(a.h2h_set_no)||0)-(intOrNull(b.h2h_set_no)||0));
+                const collapseId = `h2h_${Math.random().toString(16).slice(2)}`;
+
+                const first = matchRows[0];
+                const firstKey = h2hKeyRow(first);
+                const firstPair = h2hSetIndex.get(firstKey) || [];
+                const opp0 = firstPair.find(x=>String(x.player_id).trim() !== String(pid).trim()) || null;
+                const oppPid = opp0 ? norm(opp0.player_id) : norm(first.h2h_opponent_id);
+                const oppName = opp0 ? norm(opp0.name) : "Opponent";
+
+                const roundName = norm(first.h2h_round_name) || "";
+                const bracketName = norm(first.h2h_bracket) || "";
+                const fmtLabel = h2hFormatFromBestOfSets(first.best_of_sets) || "";
+
+                let meSetWins=0, oppSetWins=0;
+                const setBlocks=[];
+
+                for(const rSet of matchRows){
+                  const key = h2hKeyRow(rSet);
+                  const pair = h2hSetIndex.get(key)||[];
+                  const meRow = pair.find(x=>String(x.player_id).trim()===String(pid).trim());
+                  const oppRow = pair.find(x=>String(x.player_id).trim()!==String(pid).trim());
+                  if(!meRow||!oppRow) continue;
+
+                  const wins = computeSetWinCounts(meRow, oppRow);
+                  if(wins.me>wins.opp) meSetWins++;
+                  else if(wins.opp>wins.me) oppSetWins++;
+
+                  const aTimes=getSolves5(meRow), bTimes=getSolves5(oppRow);
+                  const aOut=[], bOut=[];
+                  for(let i=0;i<5;i++){
+                    if(!aTimes[i]||!bTimes[i]){aOut.push("none");bOut.push("none");continue;}
+                    const c=compareSolve(aTimes[i],bTimes[i]);
+                    aOut.push(c<0?"win":c>0?"lose":"tie");
+                    bOut.push(c>0?"win":c<0?"lose":"tie");
+                  }
+
+                  setBlocks.push(`
+                    <div class="h2hSetTitle" style="color:${theme.text};">
+                      <div>Set ${safeHtml(rSet.h2h_set_no || "1")}</div>
+                      <div style="opacity:0.85; font-weight:950;">Solve score: ${wins.me}-${wins.opp}</div>
+                    </div>
+                    <div class="h2hSetTable" style="margin-top:8px;">
+                      ${renderH2HSetTableRow(playerName, String(pid).trim(), aTimes, aOut, wins.me, theme)}
+                      ${renderH2HSetTableRow(norm(oppRow.name), norm(oppRow.player_id), bTimes, bOut, wins.opp, theme)}
+                    </div>
+                  `);
+                }
+
+                const didWin = meSetWins > oppSetWins;
+                const pillBorder = didWin ? "#16a34a" : "#ef4444";
+                const pillBg = didWin ? "#ecfdf5" : "#fef2f2";
+                const labelCls = didWin ? "h2hResultWin" : "h2hResultLose";
+                const meColor = didWin ? "#16a34a" : "#ef4444";
+                const oppColor = didWin ? "#ef4444" : "#16a34a";
+                const resultLabel = didWin ? "Win" : "Lose";
+
+                return `
+                  <div class="h2hMatchCard">
+                    <div class="h2hMatchMeta">
+                      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                        ${fmtLabel ? pill(theme, fmtLabel) : ""}
+                        ${roundName ? pill(theme, roundName) : ""}
+                        ${bracketName ? pill(theme, bracketName) : ""}
+                      </div>
+                      <button class="h2hToggleBtn" data-h2h-toggle="${collapseId}">Show sets</button>
+                    </div>
+
+                    <div class="h2hNamesRow" style="margin-top:0;">
+                      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; color:${theme.text};">
+                        <a class="h2hNameLink" href="/participant-profile-page?pid=${encodeURIComponent(String(pid).trim())}">${safeHtml(playerName)}</a>
+                        <span style="opacity:0.7; font-weight:900; color:${theme.muted};">vs</span>
+                        ${
+                          oppPid
+                            ? `<a class="h2hNameLink" href="/participant-profile-page?pid=${encodeURIComponent(oppPid)}">${safeHtml(oppName)}</a>`
+                            : `<span style="font-weight:950; color:${theme.text};">${safeHtml(oppName)}</span>`
+                        }
+                      </div>
+
+                      <div class="h2hScorePill" style="border-color:${pillBorder}; background:${pillBg};">
+                        <span class="${labelCls}">${resultLabel}</span>
+                        <span style="opacity:0.65;">•</span>
+                        <span style="font-weight:950;">
+                          <span style="color:${meColor};">${meSetWins}</span>
+                          <span style="opacity:0.65;">-</span>
+                          <span style="color:${oppColor};">${oppSetWins}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div id="${collapseId}" style="display:none;" class="h2hSetsWrap">
+                      ${setBlocks.join("")}
+                    </div>
+                  </div>
+                `;
+              }).join("");
+
+              return `
+                <div class="h2hCompCard" style="background:${theme.cardBg};border:2px solid ${theme.border};color:${theme.text};">
+                  <div style="font-size:18px;font-weight:950;color:${theme.text};">${safeHtml(compName)}</div>
+                  ${matchesHtml}
+                </div>
+              `;
+            }).join("");
+
+          } else {
+            const rows = (norm(selectedEvent).toLowerCase() === "3x3")
+              ? allRows.filter(r => !r.__isH2H)
+              : allRows;
+
+            rows.forEach((r, idx)=>{
+              const compName = norm(r.comp_name) || norm(r.comp_id) || "Competition";
+              const cat = norm(r.age_cat);
+              const rr = norm(r.round);
+              const bs = norm(r.best_single) || "DNF";
+              const overallR = r.__overallRank;
+              const ageR = cat ? r.__ageRank : null;
+
+              const theme = getCompTheme(r);
+              const compLink = getCompLink(r);
+
+              const collapseId = `solves_${idx}_${Math.random().toString(16).slice(2)}`;
+              const solvesRaw = [r.s1, r.s2, r.s3, r.s4, r.s5].filter(s => norm(s));
+              const solveHtml = solveSpansWithBestWorst(solvesRaw);
+
+              const labelColor = theme.label || theme.muted;
+              const valueColor = theme.text;
+
+              const metricLine = r.__hasAo5
+                ? `<span style="color:${labelColor}; font-weight:950;">Ao5:</span>
+                   <span style="font-weight:950; color:${valueColor};">${safeHtml(r.ao5)}</span>
+                   <span style="opacity:0.55; margin:0 10px; color:${theme.muted};">|</span>
+                   <span style="color:${labelColor}; font-weight:950;">Best:</span>
+                   <span style="font-weight:950; color:${valueColor};">${safeHtml(bs)}</span>`
+                : `<span style="color:${labelColor}; font-weight:950;">Ao5:</span>
+                   <span style="font-weight:950; color:${valueColor};">—</span>
+                   <span style="opacity:0.55; margin:0 10px; color:${theme.muted};">|</span>
+                   <span style="color:${labelColor}; font-weight:950;">Best:</span>
+                   <span style="font-weight:950; color:${valueColor};">${safeHtml(bs)}</span>`;
+
+              const showSolvesBtn = solvesRaw.length
+                ? `<button type="button" data-toggle="${collapseId}"
+                    style="padding:8px 10px; border-radius:12px; border:1px solid ${theme.border}; background:${theme.surface2}; cursor:pointer; font-weight:950; color:${theme.__fixed ? (theme.buttonText || theme.text) : ensureTextOn(theme.surface2, theme.text)};">
+                    Show solves
+                  </button>`
+                : "";
+
+              html += `
+                <div style="
+                  padding:12px;
+                  border:1.5px solid ${theme.border};
+                  border-radius:16px;
+                  margin-bottom:12px;
+                  background:${theme.cardBg};
+                  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+                  color:${theme.text};
+                ">
+                  <div style="
+                    padding:10px 12px;
+                    border-radius:14px;
+                    background:${theme.headerBg};
+                    border:1px solid ${theme.border};
+                    display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;
+                    color:${theme.text};
+                  ">
+                    <div style="min-width:220px;">
+                      ${
+                        compLink
+                          ? `<a href="${compLink}" style="text-decoration:none; font-weight:950; font-size:16px; color:${theme.text};">
+                              ${safeHtml(compName)}
+                            </a>`
+                          : `<div style="font-weight:950; font-size:16px; color:${theme.text};">${safeHtml(compName)}</div>`
+                      }
+
+                      <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                        ${cat ? pill(theme, cat) : ""}
+                        ${rr ? pill(theme, rr) : ""}
+                      </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                      ${
+                        overallR
+                          ? `<div title="Rank in competition/event (Ao5-based)">
+                              <span style="margin-right:6px; font-weight:950; color:${labelColor};">Overall</span>
+                              ${rankPill(overallR)}
+                            </div>`
+                          : ""
+                      }
+                      ${
+                        ageR
+                          ? `<div title="Age category rank (Ao5-based)">
+                              <span style="margin-right:6px; font-weight:950; color:${labelColor};">Age</span>
+                              ${rankPill(ageR)}
+                            </div>`
+                          : ""
+                      }
+                    </div>
+                  </div>
+
+                  <div style="margin-top:12px; padding:12px; border-radius:14px; background:${theme.surface}; border:1px dashed ${theme.border};">
+                    <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;">
+                      <div style="font-weight:950; color:${theme.text};">
+                        ${metricLine}
+                      </div>
+                      ${showSolvesBtn}
+                    </div>
+
+                    <div id="${collapseId}" style="display:none; margin-top:12px;">
+                      <div style="font-family: ui-monospace, Menlo, Monaco, Consolas, 'Courier New', monospace; display:flex; gap:8px; flex-wrap:wrap;">
+                        ${solveHtml}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            });
+          }
+
+          html += `</div>`;
+          eventResultsEl.innerHTML = html;
+
+          eventResultsEl.querySelectorAll("button[data-toggle]").forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+              const id = btn.getAttribute("data-toggle");
+              const el = document.getElementById(id);
+              const isOpen = el && el.style.display !== "none";
+              if(el) el.style.display = isOpen ? "none" : "block";
+              btn.textContent = isOpen ? "Show solves" : "Hide solves";
+            });
+          });
+
+          eventResultsEl.querySelectorAll("button[data-h2h-toggle]").forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+              const id = btn.getAttribute("data-h2h-toggle");
+              const el = document.getElementById(id);
+              const isOpen = el && el.style.display !== "none";
+              if(el) el.style.display = isOpen ? "none" : "block";
+              btn.textContent = isOpen ? "Show sets" : "Hide sets";
+            });
+          });
+
+          eventResultsEl.querySelectorAll("button[data-3mode]").forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+              selected3x3SubMode = btn.getAttribute("data-3mode");
+              renderSelectedEvent();
+            });
+          });
+        }
+
+        renderEventToggles();
+        renderSelectedEvent();
+      }
+
+      if(pid){
+        renderProfile();
+        return;
+      }
+
+      homeView.style.display = "block";
+      profileView.style.display = "none";
+
+      tabRankings.addEventListener("click", ()=> setHomeTab("rankings"));
+      tabParticipants.addEventListener("click", ()=> setHomeTab("participants"));
+      tabCompetitions.addEventListener("click", ()=> setHomeTab("competitions"));
+      setHomeTab("rankings");
+
+      const byPid = new Map();
+      for(const r of records){
+        const id = norm(r.player_id);
+        const name = norm(r.name);
+        if(!id || !name) continue;
+        if(!byPid.has(id)) byPid.set(id, { player_id:id, name });
+      }
+      renderParticipants(Array.from(byPid.values()));
+
+      renderCompetitions(buildCompetitionList(records));
+
+      RANK_EVENTS = buildEventListFromRecords(records);
+      selectedRankEvent = RANK_EVENTS.find(e => norm(e).toLowerCase() === "3x3") || RANK_EVENTS[0] || "";
+
+      renderRankTabs();
+      renderRankDropdown();
+      updateAo5ToggleAvailability();
+
+      setRankMode("single");
+      rankModeSingle.addEventListener("click", ()=> setRankMode("single"));
+      rankModeAo5.addEventListener("click", ()=>{
+        if(eventHasAo5Leaderboard(selectedRankEvent)) setRankMode("ao5");
+        else setRankMode("single");
+      });
+
+      rankSearch.addEventListener("input", ()=>{
+        rankingsPage = 1;
+        renderRankTable();
+      });
+      rankClear.addEventListener("click", ()=>{
+        rankSearch.value = "";
+        rankingsPage = 1;
+        renderRankTable();
+        rankSearch.focus();
+      });
+
+      rankStatus.style.display = "none";
+      renderRankTable();
+
+    } catch(err){
+      homeView.style.display = "block";
+      profileView.style.display = "none";
+      setHomeTab("rankings");
+      rankStatus.style.display = "block";
+      rankStatus.innerHTML = `<b>Failed to load CSV.</b><br>${safeHtml(err.message)}`;
+      compStatus.innerHTML = `<b>Failed to load CSV.</b><br>${safeHtml(err.message)}`;
+    }
+  })();
+})();
+</script>
+
+
