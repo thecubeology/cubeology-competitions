@@ -1,0 +1,1 @@
+# cubeology-competitions
