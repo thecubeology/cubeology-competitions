@@ -1,0 +1,85 @@
+.brandLink{ text-decoration:none; }
+.topbar .brandLink{ color:#fff; }
+
+.detailCard{
+  border:1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  background:#fff;
+  padding:16px;
+}
+
+.detailTop{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+
+.title{
+  margin:8px 0 0 0;
+  font-size:24px;
+  line-height:1.15;
+  font-weight:950;
+}
+
+.sub{
+  margin-top:8px;
+  font-weight:950;
+  color:var(--muted);
+}
+
+.desc{
+  margin-top:12px;
+  font-weight:950;
+  color:var(--ink);
+}
+
+.kvGrid{
+  margin-top:14px;
+  display:grid;
+  gap:10px;
+}
+
+.kvRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.kvItem{
+  flex:1;
+  min-width: 200px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow: var(--shadow2);
+  padding:12px;
+}
+
+.kvLabel{ font-size:12px; color:var(--muted); font-weight:900; }
+.kvValue{ margin-top:4px; font-weight:950; }
+
+.actions{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.btn.disabled{ opacity:.55; pointer-events:none; }
+
+/* Make Register Now most prominent */
+.btn.primary.bigCTA{
+  padding:14px 16px;
+  border-radius:16px;
+  font-size:15px;
+  font-weight:950;
+}
+
+/* Rules less relevant */
+.btn.ghost.less{
+  opacity:.9;
+}

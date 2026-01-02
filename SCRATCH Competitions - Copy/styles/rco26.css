@@ -1,0 +1,88 @@
+.brandLink{ text-decoration:none; color:inherit; }
+
+.rcoCard{
+  border:1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  background:#fff;
+  overflow:hidden;
+}
+
+.rcoBanner{
+  aspect-ratio: 2 / 1;
+  background:#f3f4f6;
+  border-bottom:1px solid var(--line);
+}
+.rcoBanner img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  display:block;
+}
+
+.rcoBody{
+  padding:16px;
+}
+
+.headRow{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.title{
+  margin:8px 0 0 0;
+  font-size:22px;
+  line-height:1.15;
+}
+
+.sub{
+  margin-top:6px;
+  font-weight:900;
+  color: var(--muted);
+}
+
+.block{
+  margin-top:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow: var(--shadow2);
+  padding:14px;
+}
+
+.block h3{ margin:0; }
+
+.kvRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.kvItem{
+  flex:1;
+  min-width: 160px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow: var(--shadow2);
+  padding:12px;
+}
+
+.kvLabel{ font-size:12px; color:var(--muted); font-weight:900; }
+.kvValue{ margin-top:4px; font-weight:950; }
+
+.actions{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.btn.disabled{
+  opacity:.55;
+  pointer-events:none;
+}
